@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Trade Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #d0f0c0, #e0f7fa);
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+      max-width: 620px;
+      width: 100%;
+      transition: all 0.3s ease;
+      border: 1px solid #cce5cc;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.4rem;
+      color: #2e7d32;
+      border-bottom: 2px solid #c8e6c9;
+      padding-bottom: 0.5rem;
+    }
+
+    label {
+      font-weight: 500;
+      color: #2e7d32;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #a5d6a7;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      background-color: #f1f8e9;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #43a047;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background-color: #2e7d32;
+    }
+
+    .result {
+      font-weight: bold;
+      margin: 0.5rem 0;
+      font-size: 1rem;
+    }
+
+    .yes {
+      color: #2e7d32;
+    }
+
+    .no {
+      color: #c62828;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+    }
+
+    .result-section {
+      background: #e8f5e9;
+      border-left: 4px solid #43a047;
+      padding: 1rem;
+      border-radius: 12px;
+    }
+
+    #defaults-info {
+      background: #f1f8e9;
+      border-radius: 16px;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: 1px solid #c8e6c9;
+    }
+
+    #defaults-info .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 1.5rem;
+    }
+
+    #defaults-info button {
+      grid-column: span 2;
+      width: 100%;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 1rem;
+      }
+
+      #defaults-info .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <button onclick="toggleDefaults()">Default Settings</button>
+
+    <div id="defaults-info" class="hidden section">
+      <h2>Default Settings</h2>
+      <div class="grid">
+        <div>
+          <label>Risk Reward:</label>
+          <input type="number" id="riskReward" value="3" step="0.1" />
+        </div>
+        <div>
+          <label>Capital Usage (%):</label>
+          <input type="number" id="capitalUsage" value="20" />
+        </div>
+        <div>
+          <label>Margin Factor:</label>
+          <input type="number" id="marginFactor" value="5" />
+        </div>
+        <div>
+          <label>Monthly Target (%):</label>
+          <input type="number" id="monthlyTarget" value="10" />
+        </div>
+        <div>
+          <label>Accuracy (%):</label>
+          <input type="number" id="accuracy" value="60" />
+        </div>
+        <div>
+          <label>Trades per Day:</label>
+          <input type="number" id="tradesPerDay" value="2" />
+        </div>
+        <div>
+          <label>Capital (Rs):</label>
+          <input type="number" id="capital" value="100000" />
+        </div>
+        <button onclick="saveDefaults()">Save Settings</button>
+      </div>
+    </div>
+
+    <div id="tradeInputs" class="section">
+      <h2>Trade Inputs</h2>
+      <label>Buy Price:</label>
+      <input type="number" id="buyPrice" placeholder="Enter Buy Price" />
+      <label>SL Price (with margin adjustment):</label>
+      <input type="number" id="slPrice" placeholder="Enter SL Price" />
+    </div>
+
+    <div id="results" class="hidden result-section">
+      <div id="tradeResult" class="result"></div>
+      <div id="targetPrice" class="result"></div>
+      <div id="capitalRequired" class="result"></div>
+      <div id="numStocks" class="result"></div>
+      <div id="maxLoss" class="result"></div>
+      <div id="maxProfit" class="result"></div>
+    </div>
+  </div>
+
+  <script>
+    const el = {
+      riskReward: document.getElementById("riskReward"),
+      capitalUsage: document.getElementById("capitalUsage"),
+      marginFactor: document.getElementById("marginFactor"),
+      monthlyTarget: document.getElementById("monthlyTarget"),
+      accuracy: document.getElementById("accuracy"),
+      tradesPerDay: document.getElementById("tradesPerDay"),
+      capital: document.getElementById("capital"),
+      buyPrice: document.getElementById("buyPrice"),
+      slPrice: document.getElementById("slPrice"),
+    };
+
+    const defaultsSection = document.getElementById("defaults-info");
+    const tradeInputs = document.getElementById("tradeInputs");
+    const results = document.getElementById("results");
+    const resultBox = document.getElementById("tradeResult");
+
+    function toggleDefaults() {
+      const isHidden = defaultsSection.classList.contains("hidden");
+      defaultsSection.classList.toggle("hidden");
+      tradeInputs.classList.toggle("hidden", isHidden);
+      results.classList.add("hidden");
+    }
+
+    function saveDefaults() {
+      defaultsSection.classList.add("hidden");
+      tradeInputs.classList.remove("hidden");
+    }
+
+    function calculate() {
+      const buy = parseFloat(el.buyPrice.value);
+      const sl = parseFloat(el.slPrice.value);
+      if (!buy || !sl) {
+        results.classList.add("hidden");
+        return;
+      }
+
+      const RR = parseFloat(el.riskReward.value);
+      const capUsagePerc = parseFloat(el.capitalUsage.value);
+      const marginFactor = parseFloat(el.marginFactor.value);
+      const targetPerc = parseFloat(el.monthlyTarget.value);
+      const accuracy = parseFloat(el.accuracy.value);
+      const tradesPerDay = parseFloat(el.tradesPerDay.value);
+      const capital = parseFloat(el.capital.value);
+
+      const A = (tradesPerDay * 22 * accuracy) / 100;
+      const B = 22 * tradesPerDay - A;
+      const C = A - B / RR;
+      const D = (targetPerc * 22) / (C * C);
+      const G = D * (100 / capUsagePerc) / RR;
+      const H = capital * 0.01 * G;
+      const I = H / tradesPerDay;
+      const K = buy - marginFactor * (buy - sl);
+      const N = buy + RR * (buy - K);
+      const L = ((N - buy) * 100) / N / marginFactor;
+      const O = buy + RR * (buy - K) / marginFactor;
+      const P = ((buy - K) * 100) / buy;
+      const Q = (I * 100) / P;
+      const R = Math.floor(Q / buy);
+      const S = R * (buy - K);
+      const J = RR * I;
+
+      const tradePossible = R > 0 && Q <= capital * capUsagePerc / 100 && G <= 1.5 && L < 1.5;
+
+      if (!tradePossible) {
+        results.classList.remove("hidden");
+        resultBox.textContent = "Trade Possibility: No";
+        resultBox.className = "result no";
+        document.getElementById("targetPrice").textContent = "";
+        document.getElementById("capitalRequired").textContent = "";
+        document.getElementById("numStocks").textContent = "";
+        document.getElementById("maxLoss").textContent = "";
+        document.getElementById("maxProfit").textContent = "";
+        return;
+      }
+
+      resultBox.textContent = "Trade Possibility: Yes";
+      resultBox.className = "result yes";
+
+      document.getElementById("targetPrice").textContent = "Target Price (with margin adj.): ₹" + O.toFixed(2);
+      document.getElementById("capitalRequired").textContent = "Capital Required: ₹" + Q.toFixed(2);
+      document.getElementById("numStocks").textContent = "Number of Stocks: " + R;
+      document.getElementById("maxLoss").textContent = "Max Loss: ₹" + S.toFixed(2);
+      document.getElementById("maxProfit").textContent = "Max Profit: ₹" + (3 * S).toFixed(2);
+
+      results.classList.remove("hidden");
+    }
+
+    el.buyPrice.addEventListener("input", calculate);
+    el.slPrice.addEventListener("input", calculate);
+  </script>
+</body>
+
+</html>
