@@ -6,131 +6,458 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Trade Calculator</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
+    * {
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #d0f0c0, #e0f7fa);
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: start;
-      min-height: 100vh;
+      align-items: flex-start;
+      background: linear-gradient(135deg, #1a1c20 0%, #2d3436 100%);
       padding: 2rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+      animation: rotate 30s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .container {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
-      max-width: 620px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 2.5rem;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
       width: 100%;
-      transition: all 0.3s ease;
-      border: 1px solid #cce5cc;
+      max-width: 680px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 1;
+      margin: 2rem 0;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3);
     }
 
     h2 {
-      margin-top: 0;
-      font-size: 1.4rem;
-      color: #2e7d32;
-      border-bottom: 2px solid #c8e6c9;
-      padding-bottom: 0.5rem;
+      color: #fff;
+      margin-bottom: 1.8rem;
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      position: relative;
+      padding-bottom: 0.8rem;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
+      border-radius: 3px;
     }
 
     label {
+      display: block;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 0.7rem;
       font-weight: 500;
-      color: #2e7d32;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
     }
 
     input[type="number"] {
       width: 100%;
-      padding: 0.6rem;
-      border: 1px solid #a5d6a7;
-      border-radius: 10px;
-      margin-bottom: 1rem;
+      padding: 1rem 1.2rem;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
       font-size: 1rem;
-      background-color: #f1f8e9;
-      box-sizing: border-box;
+      margin-bottom: 1.2rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #4facfe;
+      box-shadow: 0 0 20px rgba(79, 172, 254, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    input[type="number"]::placeholder {
+      color: rgba(255, 255, 255, 0.3);
     }
 
     button {
-      background-color: #43a047;
+      background: linear-gradient(45deg, #00f2fe 0%, #4facfe 100%);
       color: white;
       border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      border-radius: 15px;
       cursor: pointer;
-      font-weight: bold;
-      margin-top: 1rem;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+      margin-top: 1.2rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
     }
 
     button:hover {
-      background-color: #2e7d32;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2rem;
+      border-radius: 20px;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .section:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .result-section {
+      background: rgba(46, 204, 113, 0.1);
+      border-left: 4px solid #2ecc71;
+      padding: 2rem;
+      border-radius: 20px;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .result {
-      font-weight: bold;
-      margin: 0.5rem 0;
-      font-size: 1rem;
+      color: #fff;
+      margin: 0.8rem 0;
+      font-size: 1.1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .result:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(5px);
     }
 
     .yes {
-      color: #2e7d32;
+      color: #2ecc71;
+      border-left: 4px solid #2ecc71;
     }
 
     .no {
-      color: #c62828;
+      color: #e74c3c;
+      border-left: 4px solid #e74c3c;
     }
 
     .hidden {
       display: none;
     }
 
-    .section {
-      margin-bottom: 1.5rem;
-    }
-
-    .result-section {
-      background: #e8f5e9;
-      border-left: 4px solid #43a047;
-      padding: 1rem;
-      border-radius: 12px;
-    }
-
-    #defaults-info {
-      background: #f1f8e9;
-      border-radius: 16px;
-      padding: 1rem;
-      margin-top: 1rem;
-      border: 1px solid #c8e6c9;
-    }
-
     #defaults-info .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem 1.5rem;
-    }
-
-    #defaults-info button {
-      grid-column: span 2;
-      width: 100%;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
     }
 
     @media (max-width: 640px) {
-      .container {
+      body {
         padding: 1rem;
+      }
+
+      .container {
+        padding: 1.5rem;
+        margin: 1rem 0;
       }
 
       #defaults-info .grid {
         grid-template-columns: 1fr;
       }
+
+      h2 {
+        font-size: 1.4rem;
+      }
+
+      .section {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Add smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, #00f2fe 0%, #4facfe 100%);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    /* Add styles for toggle switches */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+      margin-left: 10px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.toggle-slider {
+      background: linear-gradient(45deg, #00f2fe 0%, #4facfe 100%);
+    }
+
+    input:checked+.toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    .condition-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .condition-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .condition-label {
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    .condition-description {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+    }
+
+    /* Warning Modal Styles */
+    .warning-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .warning-content {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      padding: 2rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .warning-title {
+      color: #fff;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .warning-message {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .warning-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .warning-button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      min-width: 100px;
+    }
+
+    .warning-button.confirm {
+      background: linear-gradient(45deg, #00f2fe 0%, #4facfe 100%);
+      color: white;
+    }
+
+    .warning-button.cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .warning-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .warning-button:active {
+      transform: translateY(0);
     }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
+  <!-- Add Warning Modal -->
+  <div id="warningModal" class="warning-modal">
+    <div class="warning-content">
+      <div class="warning-title">Unsaved Changes</div>
+      <div class="warning-message">You have unsaved changes in conditions. Do you want to discard them?</div>
+      <div class="warning-buttons">
+        <button class="warning-button cancel" onclick="handleWarningResponse(false)">Cancel</button>
+        <button class="warning-button confirm" onclick="handleWarningResponse(true)">Discard</button>
+      </div>
+    </div>
+  </div>
+
   <div class="container">
-    <button onclick="toggleDefaults()">Default Settings</button>
+    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+      <button onclick="toggleDefaults()" style="flex: 1;">Default Settings</button>
+      <button onclick="toggleConditions()" style="flex: 1;">Conditions</button>
+    </div>
 
     <div id="defaults-info" class="hidden section">
       <h2>Default Settings</h2>
@@ -167,6 +494,41 @@
       </div>
     </div>
 
+    <div id="conditions-info" class="hidden section">
+      <h2>Trading Conditions</h2>
+      <div class="condition-item">
+        <div>
+          <div class="condition-label">Number of stocks</div>
+          <div class="condition-description">Ensures positive number of stocks can be bought</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="conditionR" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="condition-item">
+        <div>
+          <div class="condition-label">Capital Usage</div>
+          <div class="condition-description">Ensure capital usage percentage</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="conditionQ" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="condition-item">
+        <div>
+          <div class="condition-label">Risk and Loss</div>
+          <div class="condition-description">Ensures risk and loss percentages are within limits</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="conditionGL" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <button onclick="saveConditions()" style="margin-top: 1rem;">Save Conditions</button>
+    </div>
+
     <div id="tradeInputs" class="section">
       <h2>Trade Inputs</h2>
       <label>Buy Price:</label>
@@ -196,24 +558,153 @@
       capital: document.getElementById("capital"),
       buyPrice: document.getElementById("buyPrice"),
       slPrice: document.getElementById("slPrice"),
+      conditionR: document.getElementById("conditionR"),
+      conditionQ: document.getElementById("conditionQ"),
+      conditionGL: document.getElementById("conditionGL")
     };
 
     const defaultsSection = document.getElementById("defaults-info");
+    const conditionsSection = document.getElementById("conditions-info");
     const tradeInputs = document.getElementById("tradeInputs");
     const results = document.getElementById("results");
     const resultBox = document.getElementById("tradeResult");
+    const warningModal = document.getElementById("warningModal");
+
+    // Track if there are unsaved changes
+    let hasUnsavedChanges = false;
+    let pendingAction = null;
+
+    // Load saved values on page load
+    function loadSavedValues() {
+      // Load default settings
+      const savedSettings = JSON.parse(localStorage.getItem('tradeCalculatorSettings')) || {};
+      el.riskReward.value = savedSettings.riskReward || 3;
+      el.capitalUsage.value = savedSettings.capitalUsage || 20;
+      el.marginFactor.value = savedSettings.marginFactor || 5;
+      el.monthlyTarget.value = savedSettings.monthlyTarget || 10;
+      el.accuracy.value = savedSettings.accuracy || 60;
+      el.tradesPerDay.value = savedSettings.tradesPerDay || 2;
+      el.capital.value = savedSettings.capital || 100000;
+
+      // Load conditions
+      const savedConditions = JSON.parse(localStorage.getItem('tradeCalculatorConditions')) || {};
+      el.conditionR.checked = savedConditions.conditionR !== undefined ? savedConditions.conditionR : true;
+      el.conditionQ.checked = savedConditions.conditionQ !== undefined ? savedConditions.conditionQ : true;
+      el.conditionGL.checked = savedConditions.conditionGL !== undefined ? savedConditions.conditionGL : true;
+    }
+
+    // Save values to local storage
+    function saveValues() {
+      // Save default settings
+      const settings = {
+        riskReward: parseFloat(el.riskReward.value),
+        capitalUsage: parseFloat(el.capitalUsage.value),
+        marginFactor: parseFloat(el.marginFactor.value),
+        monthlyTarget: parseFloat(el.monthlyTarget.value),
+        accuracy: parseFloat(el.accuracy.value),
+        tradesPerDay: parseFloat(el.tradesPerDay.value),
+        capital: parseFloat(el.capital.value)
+      };
+      localStorage.setItem('tradeCalculatorSettings', JSON.stringify(settings));
+
+      // Save conditions
+      const conditions = {
+        conditionR: el.conditionR.checked,
+        conditionQ: el.conditionQ.checked,
+        conditionGL: el.conditionGL.checked
+      };
+      localStorage.setItem('tradeCalculatorConditions', JSON.stringify(conditions));
+    }
+
+    function showWarningModal() {
+      warningModal.style.display = 'flex';
+    }
+
+    function hideWarningModal() {
+      warningModal.style.display = 'none';
+    }
+
+    function handleWarningResponse(confirmed) {
+      hideWarningModal();
+      if (confirmed) {
+        hasUnsavedChanges = false;
+        if (pendingAction) {
+          pendingAction();
+          pendingAction = null;
+        }
+      }
+    }
+
+    function showSection(section) {
+      // Hide all sections first
+      defaultsSection.classList.add("hidden");
+      conditionsSection.classList.add("hidden");
+      tradeInputs.classList.add("hidden");
+      results.classList.add("hidden");
+
+      // Show the requested section
+      section.classList.remove("hidden");
+    }
 
     function toggleDefaults() {
-      const isHidden = defaultsSection.classList.contains("hidden");
-      defaultsSection.classList.toggle("hidden");
-      tradeInputs.classList.toggle("hidden", isHidden);
-      results.classList.add("hidden");
+      if (hasUnsavedChanges) {
+        pendingAction = () => showSection(defaultsSection);
+        showWarningModal();
+        return;
+      }
+      showSection(defaultsSection);
+    }
+
+    function toggleConditions() {
+      if (hasUnsavedChanges) {
+        pendingAction = () => showSection(conditionsSection);
+        showWarningModal();
+        return;
+      }
+      showSection(conditionsSection);
     }
 
     function saveDefaults() {
-      defaultsSection.classList.add("hidden");
-      tradeInputs.classList.remove("hidden");
+      saveValues();
+      showSection(tradeInputs);
+      hasUnsavedChanges = false;
     }
+
+    function saveConditions() {
+      saveValues();
+      showSection(tradeInputs);
+      hasUnsavedChanges = false;
+    }
+
+    // Track changes in conditions
+    el.conditionR.addEventListener("change", () => {
+      hasUnsavedChanges = true;
+    });
+    el.conditionQ.addEventListener("change", () => {
+      hasUnsavedChanges = true;
+    });
+    el.conditionGL.addEventListener("change", () => {
+      hasUnsavedChanges = true;
+    });
+
+    // Track changes in default settings
+    Object.values(el).forEach(element => {
+      if (element.tagName === 'INPUT' && element.type === 'number') {
+        element.addEventListener("change", () => {
+          hasUnsavedChanges = true;
+        });
+      }
+    });
+
+    // Close modal when clicking outside
+    warningModal.addEventListener("click", (e) => {
+      if (e.target === warningModal) {
+        hideWarningModal();
+      }
+    });
+
+    // Load saved values when page loads
+    document.addEventListener('DOMContentLoaded', loadSavedValues);
 
     function calculate() {
       const buy = parseFloat(el.buyPrice.value);
@@ -248,7 +739,26 @@
       const S = R * (buy - K);
       const J = RR * I;
 
-      const tradePossible = R > 0 && Q <= capital * capUsagePerc / 100 && G <= 1.5 && L < 1.5;
+      let tradePossible = true;
+      const conditions = [];
+
+      if (el.conditionR.checked) {
+        const conditionR = R > 0;
+        tradePossible = tradePossible && conditionR;
+        conditions.push(`R > 0: ${conditionR ? 'Yes' : 'No'}`);
+      }
+
+      if (el.conditionQ.checked) {
+        const conditionQ = Q <= capital * capUsagePerc / 100;
+        tradePossible = tradePossible && conditionQ;
+        conditions.push(`Q ≤ capital usage: ${conditionQ ? 'Yes' : 'No'}`);
+      }
+
+      if (el.conditionGL.checked) {
+        const conditionGL = G <= 1.5 && L < 1.5;
+        tradePossible = tradePossible && conditionGL;
+        conditions.push(`G ≤ 1.5 and L < 1.5: ${conditionGL ? 'Yes' : 'No'}`);
+      }
 
       if (!tradePossible) {
         results.classList.remove("hidden");
